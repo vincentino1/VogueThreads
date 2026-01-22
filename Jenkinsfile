@@ -1,0 +1,62 @@
+properties([
+    pipelineTriggers([
+        [
+            $class: 'GenericTrigger',
+            token: 'MY_GEN_TOKEN',
+            printContributedVariables: true,
+            genericVariables: [
+                [key: 'ref',       value: '$.ref'],
+                [key: 'repo_name', value: '$.repository.name']
+            ],
+            regexpFilterText: '$repo_name:$ref',
+            regexpFilterExpression: '^frontend:refs/heads/main$'
+        ]
+    ])
+])
+
+pipeline {
+    agent any
+    
+    tools {
+        nodejs 'node20' // Name must match the one you configured in Jenkins
+    }
+    
+    stages {
+
+        stage('Webhook Debug') {
+            steps {
+                echo "Branch: ${env.ref}"
+                echo "Repo: ${env.repo_name}"
+            }
+        }
+        
+        stage('Checkout') {
+            steps {
+                git(
+                    branch: 'main',
+                    credentialsId: 'Git_Credential',
+                    url: 'https://github.com/vincentino1/frontend.git'
+                )
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('angular-app') {
+                    sh 'npm install'
+                }
+            }
+        }
+        
+        stage('Build Angular app') {
+            steps {
+                dir('angular-app') {
+                    sh 'npm run build --prod'
+
+                }
+            }
+        }
+
+
+    }
+}
