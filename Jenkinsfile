@@ -44,8 +44,12 @@ pipeline {
         
         stage('Checkout') {
             steps {
+
+                script {
+                    def branchName = env.ref.replace('refs/heads/', '')
+                    echo "Checking out branch: ${branchName}"          
                 git(
-                    branch: 'main',
+                    branch: "${env.branchName}",
                     credentialsId: "${env.GIT_CREDENTIALS}",
                     url: 'https://github.com/vincentino1/frontend.git'
                 )
