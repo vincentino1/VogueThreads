@@ -38,7 +38,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git(
-                    branch: "$.ref",
+                    branch: 'main',
                     credentialsId: "${env.GIT_CREDENTIALS}",
                     url: 'https://github.com/vincentino1/frontend.git'
                 )
