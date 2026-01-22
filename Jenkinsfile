@@ -16,7 +16,7 @@ properties([
 
 pipeline {
     agent {
-        docker {image 'node:20.20-alpine'}      
+        docker {image 'node:20.9.0'}      
     }
 
         environment {
