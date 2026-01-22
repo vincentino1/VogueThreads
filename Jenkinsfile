@@ -50,7 +50,7 @@ pipeline {
                     echo "Checking out branch: ${branchName}"   
                 }
                 git(
-                    branch: branchName,
+                    branch: env.branchName,
                     credentialsId: "${env.GIT_CREDENTIALS}",
                     url: 'https://github.com/vincentino1/frontend.git'
                 )
