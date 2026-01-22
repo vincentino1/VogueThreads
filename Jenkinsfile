@@ -15,7 +15,7 @@ properties([
 ])
 
 pipeline {
-    agent none
+    agent any
 
         environment {
         // credentials for git
@@ -60,17 +60,7 @@ pipeline {
             steps {
                 dir('angular-app') {
                     sh 'npm install'
-                }
-            }
-        }
-        
-        stage('Build Angular app') {
-            agent {
-                 docker {image 'node:20.9'} 
-            }    
-            steps {
-                dir('angular-app') {
-                    sh 'npm run build --prod'
+                    sh 'npm run build'
                 }
             }
         }
