@@ -16,10 +16,7 @@ properties([
 
 pipeline {
     agent any
-
-    environment {
-        // credentials for git
-    GIT_CREDENTIALS = 'Git_Credential'
+    
     tools {
         nodejs 'node20' // Name must match the one you configured in Jenkins
     }
@@ -37,7 +34,7 @@ pipeline {
             steps {
                 git(
                     branch: 'main',
-                    credentialsId: "${env.GIT_CREDENTIALS}",
+                    credentialsId: 'Git_Credential',
                     url: 'https://github.com/vincentino1/frontend.git'
                 )
             }
