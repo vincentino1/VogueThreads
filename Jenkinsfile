@@ -17,6 +17,9 @@ properties([
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node20' // Name must match the one you configured in Jenkins
+    }
         environment {
         // credentials for git
         GIT_CREDENTIALS = 'Git_Credential'
@@ -54,9 +57,6 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            agent {
-                 docker {image 'node:20.9'} 
-            }
             steps {
                 dir('angular-app') {
                     sh 'npm install'
