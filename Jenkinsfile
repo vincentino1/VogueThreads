@@ -16,6 +16,10 @@ properties([
 
 pipeline {
     agent any
+
+    environment {
+        // credentials for git
+    GIT_CREDENTIALS = 'Git_Credential'
     
     tools {
         nodejs 'node20' // Name must match the one you configured in Jenkins
