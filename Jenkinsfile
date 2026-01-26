@@ -60,6 +60,13 @@ pipeline {
             steps {
                 dir('angular-app') {
                     sh 'npm install'
+                }
+            }
+        }
+
+        stage('Build angular app') {
+            steps {
+                dir('angular-app') {
                     sh 'npm run build'
                 }
             }
