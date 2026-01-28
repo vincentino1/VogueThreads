@@ -59,15 +59,23 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('angular-app') {
-                    sh 'npm install'
+                    sh 'npm ci'
                 }
             }
         }
 
+    stage('Unit Tests') {
+        steps {
+            dir('angular-app') {
+                sh 'ng test --watch=false --browsers=ChromeHeadless'
+            }
+        }
+    }
+        
         stage('Build angular app') {
             steps {
                 dir('angular-app') {
-                    sh 'npm run build'
+                    sh 'ng build --configuration production'
                 }
             }
         }
