@@ -15,8 +15,11 @@ properties([
 ])
 
 pipeline {
-    agent { docker 'node:20.20-alpine3.23' }
+    agent any
 
+    tools {
+        nodejs 'node20'  // Name of NodeJS installation in Jenkins
+    }
 
     environment {
         // credentials for git
