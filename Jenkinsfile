@@ -18,7 +18,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'node20'  // Name of NodeJS installation in Jenkins.
+        nodejs 'node20'  // Name of NodeJS installation in Jenkins
     }
 
     environment {
