@@ -65,7 +65,7 @@ pipeline {
     stage('Unit Tests') {
         steps {
             dir('angular-app') {
-                sh 'ng test --watch=false --browsers=ChromiumHeadless'
+                sh 'ng test --watch=false --browsers=ChromeHeadless'
             }
         }
     }
