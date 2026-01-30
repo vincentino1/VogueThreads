@@ -1,1 +1,1 @@
-First run the webhooks parameters first in the jenkins. 
+First run the webhooks parameters first in the jenkins
