@@ -61,7 +61,7 @@ pipeline {
             steps {
                 dir('angular-app') {
                     sh 'npm install -g @angular/cli@latest'
-                    sh 'npm ci'
+                    sh 'npm install'
                 }
             }
         }
