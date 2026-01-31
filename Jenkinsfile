@@ -60,7 +60,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('angular-app') {
-                    
+                    sh 'npm install -g @angular/cli@latest'
                     sh 'npm install'
                 }
             }
