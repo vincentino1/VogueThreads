@@ -1,24 +1,10 @@
-properties([
-    pipelineTriggers([
-        [
-            $class: 'GenericTrigger',
-            token: 'MY_GEN_TOKEN',
-            printContributedVariables: true,
-            genericVariables: [
-                [key: 'ref',       value: '$.ref'],
-                [key: 'repo_name', value: '$.repository.name']
-            ],
-            regexpFilterText: '$repo_name:$ref',
-            regexpFilterExpression: '^.+:refs/heads/.+$' // default to any repo_name and branch in the payload
-        ]
-    ])
-])
+
 
 pipeline {
     agent any
 
     tools {
-        nodejs 'node17'  // Name of NodeJS installation in Jenkins
+        nodejs 'node20'  // Name of NodeJS installation in Jenkins
     }
 
     environment {
