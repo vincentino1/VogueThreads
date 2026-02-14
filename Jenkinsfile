@@ -15,7 +15,13 @@ properties([
 ])
 
 pipeline {
-    agent any
+    // Use Docker-in-Docker agent with Docker socket mounted
+    agent {
+        docker {
+            image 'docker:stable-dind'
+            args '-v /var/run/docker.sock:/var/run/docker.sock --privileged'
+        }
+    }
 
     tools {
         nodejs 'node20'
@@ -79,18 +85,16 @@ pipeline {
 registry=https://16-52-79-103.sslip.io/repository/myapp-npm-group/
 always-auth=true
 //16-52-79-103.sslip.io/repository/myapp-npm-group/:_auth=\${NEXUS_NPM_TOKEN}
-email=myapp-developer@test.com
 """
                         sh 'npm ci'
+                        sh 'npm whoami'  // Verify auth
                     }
                 }
             }
 
             post {
                 always {
-                    dir('angular-app') {
-                        sh 'rm -f .npmrc'
-                    }
+                    dir('angular-app') { sh 'rm -f .npmrc'}
                 }
             }
         }
@@ -141,6 +145,7 @@ email=myapp-developer@test.com
                 script {
                     docker.withRegistry("${REVERSE_PROXY_BASE_URL}", "${DOCKER_CREDENTIALS_ID}") {
                         docker.image(env.IMAGE_NAME).push()
+                        docker.image(env.IMAGE_NAME).push('latest')
                     }
 
                     echo "Pushed Docker image: ${env.IMAGE_NAME}"
@@ -151,6 +156,11 @@ email=myapp-developer@test.com
     }
 
     post {
+
+        always {
+            sh 'docker rmi ${IMAGE_NAME} || true'  // Cleanup
+        }
+        
         success {
             echo 'Pipeline completed successfully.'
         }
