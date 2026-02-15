@@ -1,6 +1,9 @@
+# Private Nexus Docker registry
+ARG DOCKER_PRIVATE_REPO=16-52-79-103.sslip.io/myapp-docker-group
+
 # Stage 1 - Build the Angular app
 # Use Node 20 Alpine image from private Nexus Docker group registry
-FROM 16-52-79-103.sslip.io/myapp-npm-group/node:20-alpine AS builder
+FROM ${DOCKER_PRIVATE_REPO}/node:20-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -18,7 +21,7 @@ COPY . .
 RUN npm run build 
 
 # Stage 2: Serve with Nginx
-FROM 16-52-79-103.sslip.io/myapp-npm-group/nginx:alpine
+FROM ${DOCKER_PRIVATE_REPO}/nginx:alpine
 
 # Remove existing content
 RUN rm -rf /usr/share/nginx/html/*
