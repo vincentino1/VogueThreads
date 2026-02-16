@@ -91,7 +91,7 @@ always-auth=true
 email=jenkins@example.com
 """                     
                         sh 'npm install -g @angular/cli@latest'
-                        sh 'npm install'
+                        sh 'npm ci'
                         sh 'npm whoami'  // Verify auth
                     }
                 }
@@ -107,7 +107,7 @@ email=jenkins@example.com
         stage('Unit Tests') {
             steps {
                 dir('angular-app') {
-                    sh 'ng test'
+                    sh 'npm run test:ci'
                 }
             }
         }
