@@ -1,5 +1,5 @@
 properties([
-    pipelineTriggers([  
+    pipelineTriggers([
         [
             $class: 'GenericTrigger',
             token: 'MY_GEN_TOKEN',
@@ -26,15 +26,18 @@ pipeline {
         // Git
         GIT_CREDENTIALS = 'github-creds'
 
-        // Docker
-        DOCKER_REPO = 'myapp-docker-hosted'
-        REGISTRY_HOSTNAME = '3-98-125-121.sslip.io'
+        // Nexus Docker Registry
+        DOCKER_REPO           = 'myapp-docker-hosted'
+        REGISTRY_HOSTNAME     = '3-98-125-121.sslip.io'
         REVERSE_PROXY_BASE_URL = 'https://3-98-125-121.sslip.io'
         DOCKER_CREDENTIALS_ID = 'docker-registry-creds'
 
-        // npm registry
-        NPM_REGISTRY_URL = '3-98-125-121.sslip.io'
-        NODE_EXTRA_CA_CERTS = '/etc/ssl/certs/ca-certificates.crt'
+        // Nexus npm registry configuration
+        NPM_REGISTRY_URL      = '3-98-125-121.sslip.io'
+
+        // Puppeteer skip download
+        PUPPETEER_SKIP_DOWNLOAD = 'true'
+        NODE_EXTRA_CA_CERTS      = "/etc/ssl/certs/ca-certificates.crt"
     }
 
     stages {
@@ -48,6 +51,7 @@ pipeline {
 
         stage('Clean Workspace') {
             steps {
+                echo "Cleaning workspace..."
                 cleanWs()
             }
         }
@@ -63,8 +67,8 @@ pipeline {
                 }
 
                 git(
-                    branch: env.branchName,
-                    credentialsId: GIT_CREDENTIALS,
+                    branch: "${env.branchName}",
+                    credentialsId: "${env.GIT_CREDENTIALS}",
                     url: 'https://github.com/vincentino1/frontend.git'
                 )
             }
@@ -76,16 +80,17 @@ pipeline {
                     withCredentials([
                         string(credentialsId: 'NEXUS_NPM_TOKEN', variable: 'NPM_TOKEN')
                     ]) {
-                        // Configure npm to use Nexus private registry
-                        writeFile file: '.npmrc', text: """
+                        writeFile file: '.npmrc',
+                                  text: """
 registry=https://${REGISTRY_HOSTNAME}/repository/myapp-npm-group/
 always-auth=true
 //${REGISTRY_HOSTNAME}/repository/myapp-npm-group/:_auth=${NPM_TOKEN}
 email=jenkins@example.com
 """
+                        // Install Angular CLI and npm packages
                         sh 'npm install -g @angular/cli@latest'
-                        sh 'npm install'
-                        sh 'npm whoami'  // Verify authentication
+                        sh 'npm install --no-audit --no-fund'
+                        sh 'npm whoami'  // Verify auth
                     }
                 }
             }
@@ -101,7 +106,6 @@ email=jenkins@example.com
         stage('Unit Tests') {
             steps {
                 dir('angular-app') {
-                    sh 'npm install --no-audit --no-fund puppeteer'
                     withEnv(['CHROME_BIN=$(node -p "require(\'puppeteer\').executablePath()")']) {
                         sh 'npm run test:ci'
                     }
@@ -127,11 +131,11 @@ email=jenkins@example.com
 
                         env.IMAGE_NAME = "${REGISTRY_HOSTNAME}/${DOCKER_REPO}/${appName}:v${appVersion}-${BUILD_NUMBER}"
 
-                        docker.withRegistry(REVERSE_PROXY_BASE_URL, DOCKER_CREDENTIALS_ID) {
+                        docker.withRegistry("${REVERSE_PROXY_BASE_URL}", "${DOCKER_CREDENTIALS_ID}") {
                             docker.build(env.IMAGE_NAME, '.')
                         }
 
-                        echo "Built Docker image: ${env.IMAGE_NAME}"
+                        echo "Built image: ${env.IMAGE_NAME}"
                     }
                 }
             }
@@ -139,11 +143,11 @@ email=jenkins@example.com
 
         stage('Push Docker Image to Nexus') {
             when {
-                expression { env.branchName == 'main' }
+                expression { return env.branchName == 'main' }
             }
             steps {
                 script {
-                    docker.withRegistry(REVERSE_PROXY_BASE_URL, DOCKER_CREDENTIALS_ID) {
+                    docker.withRegistry("${REVERSE_PROXY_BASE_URL}", "${DOCKER_CREDENTIALS_ID}") {
                         docker.image(env.IMAGE_NAME).push()
                         docker.image(env.IMAGE_NAME).push('latest')
                     }
@@ -157,7 +161,7 @@ email=jenkins@example.com
         always {
             script {
                 if (env.IMAGE_NAME) {
-                    sh "docker rmi ${env.IMAGE_NAME} || true"
+                    sh "docker rmi ${env.IMAGE_NAME} || true"  // Cleanup
                 }
             }
         }
@@ -167,11 +171,10 @@ email=jenkins@example.com
         }
 
         failure {
-            echo 'Pipeline failed.'
+            echo 'The pipeline encountered an error and did not complete successfully.'
         }
     }
 }
-
 
 
 // properties([
