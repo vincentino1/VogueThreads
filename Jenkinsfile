@@ -95,7 +95,7 @@ email=jenkins@example.com
                         sh 'echo "NPM_TOKEN length: ${#NPM_TOKEN}"'  // should print ~20+ if set
                         sh 'npm whoami || echo "whoami failed - auth issue"'
                         sh 'npm ci --verbose'
-                        sh 'npm ci'
+                        sh 'npm install'
                         sh 'npm whoami'  // Verify auth
                     }
                 }
