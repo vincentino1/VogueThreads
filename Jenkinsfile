@@ -31,12 +31,14 @@ pipeline {
         REGISTRY_HOSTNAME     = '3-98-125-121.sslip.io'
         REVERSE_PROXY_BASE_URL = 'https://3-98-125-121.sslip.io'
 
-        NPM_REGISTRY_URL = 'http://3-98-125-121.sslip.io/repository/myapp-npm-group/' 
+        // Nexus npm registry configuration
+        NPM_REGISTRY_URL = 'https://3-98-125-121.sslip.io/repository/myapp-npm-group/' 
         NPM_ALWAYS_AUTH  = 'true'
 
         // Docker credentials ID (must be Username/Password type in Jenkins)
         DOCKER_CREDENTIALS_ID = 'docker-registry-creds'
 
+        // Ensures npm trusts your private Nexus npm registry
         NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt"
     }
 
