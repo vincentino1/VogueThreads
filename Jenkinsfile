@@ -89,12 +89,6 @@ always-auth=true
 //${REGISTRY_HOSTNAME}/repository/myapp-npm-group/:_auth=${NPM_TOKEN}
 email=jenkins@example.com
 """                     
-                        // Debug prints (token masked in console output)
-                        // sh 'cat .npmrc | sed "s/${NPM_TOKEN}/***MASKED***/g" || true'
-                        // sh 'npm config list | grep -i auth || true'
-                        // sh 'echo "NPM_TOKEN length: ${#NPM_TOKEN}"'  // should print ~20+ if set
-                        // sh 'npm whoami || echo "whoami failed - auth issue"'
-                        //sh 'npm ci --verbose'
                         sh 'npm install'
                         sh 'npm whoami'  // Verify auth
                     }
@@ -111,7 +105,7 @@ email=jenkins@example.com
         stage('Unit Tests') {
             steps {
                 dir('angular-app') {
-                    sh 'npm run test'
+                    sh 'ng test'
                 }
             }
         }
