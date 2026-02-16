@@ -24,23 +24,22 @@ pipeline {
     }
 
     environment {
-        GIT_CREDENTIALS       = 'github-creds'
+        GIT_CREDENTIALS        = 'github-creds'
 
         // Nexus Docker Registry ENV
-        DOCKER_REPO           = 'myapp-docker-hosted'
-        REGISTRY_HOSTNAME     = '3-98-125-121.sslip.io'
+        DOCKER_REPO            = 'myapp-docker-hosted'
+        REGISTRY_HOSTNAME      = '3-98-125-121.sslip.io'
         REVERSE_PROXY_BASE_URL = 'https://3-98-125-121.sslip.io'
 
         // Nexus npm registry configuration
-        NPM_REGISTRY_URL = '3-98-125-121.sslip.io' 
-        NPM_ALWAYS_AUTH  = 'true'
-    
+        NPM_REGISTRY_URL       = '3-98-125-121.sslip.io' 
+        NPM_ALWAYS_AUTH        = 'true'
 
-        // Docker credentials ID (must be Username/Password type in Jenkins)
-        DOCKER_CREDENTIALS_ID = 'docker-registry-creds'
+        // Docker credentials ID (Username/Password type in Jenkins)
+        DOCKER_CREDENTIALS_ID  = 'docker-registry-creds'
 
         // Ensures npm trusts your private Nexus npm registry
-        NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt"
+        NODE_EXTRA_CA_CERTS    = "/etc/ssl/certs/ca-certificates.crt"
     }
 
     stages {
@@ -76,7 +75,7 @@ pipeline {
                 )
             }
         }
- 
+
         stage('Install Dependencies') {
             steps {
                 dir('angular-app') {
@@ -96,28 +95,28 @@ email=jenkins@example.com
                     }
                 }
             }
-
             post {
                 always {
-                    dir('angular-app') { sh 'rm -f .npmrc' }
+                    dir('angular-app') {
+                        sh 'rm -f .npmrc'
+                    }
                 }
             }
         }
 
         stage('Unit Tests') {
-    steps {
-        dir('angular-app') {
-            // Ensure Puppeteer is installed
-            sh 'npm install --no-audit --no-fund puppeteer'
+            steps {
+                dir('angular-app') {
+                    // Ensure Puppeteer is installed
+                    sh 'npm install --no-audit --no-fund puppeteer'
 
-            // Set CHROME_BIN to Puppeteer Chromium
-            withEnv(["CHROME_BIN=$(node -p \"require('puppeteer').executablePath()\")"]) {
-                sh 'npm run test:ci'
+                    // Set CHROME_BIN to Puppeteer Chromium
+                    withEnv(["CHROME_BIN=$(node -p \"require('puppeteer').executablePath()\")"]) {
+                        sh 'npm run test:ci'
+                    }
+                }
             }
         }
-    }
-}
-
 
         stage('Build Angular App') {
             steps {
