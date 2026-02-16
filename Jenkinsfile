@@ -10,7 +10,7 @@ properties([
             ],
             regexpFilterText: '$repo_name:$ref',
             regexpFilterExpression: '^.+:refs/heads/.+$'
-        ]
+        ] 
     ])
 ])
 
