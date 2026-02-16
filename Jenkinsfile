@@ -107,7 +107,7 @@ email=jenkins@example.com
         stage('Unit Tests') {
             steps {
                 dir('angular-app') {
-                    sh 'npm run test:ci'
+                    sh 'ng test'
                 }
             }
         }
