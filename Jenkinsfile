@@ -88,7 +88,7 @@ registry=https://${REGISTRY_HOSTNAME}/repository/myapp-npm-group/
 always-auth=true
 //${REGISTRY_HOSTNAME}/repository/myapp-npm-group/:_auth=${NPM_TOKEN}
 email=jenkins@example.com
-"""                     
+"""                     sh 'npm install -g @angular/cli@latest'
                         sh 'npm install'
                         sh 'npm whoami'  // Verify auth
                     }
@@ -105,7 +105,7 @@ email=jenkins@example.com
         stage('Unit Tests') {
             steps {
                 dir('angular-app') {
-                    sh 'ng test'
+                    sh 'npm run test:ci'
                 }
             }
         }
