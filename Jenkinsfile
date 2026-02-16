@@ -105,14 +105,19 @@ email=jenkins@example.com
         }
 
         stage('Unit Tests') {
-            steps {
-                dir('angular-app') {
-                    withEnv(["CHROME_BIN=$(node -p \"require('puppeteer').executablePath()\")"]) {
-                    sh 'npm run test:ci'
-                    }
-                }
+    steps {
+        dir('angular-app') {
+            // Ensure Puppeteer is installed
+            sh 'npm install --no-audit --no-fund puppeteer'
+
+            // Set CHROME_BIN to Puppeteer Chromium
+            withEnv(["CHROME_BIN=$(node -p \"require('puppeteer').executablePath()\")"]) {
+                sh 'npm run test:ci'
             }
         }
+    }
+}
+
 
         stage('Build Angular App') {
             steps {
