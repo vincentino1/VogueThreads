@@ -1,5 +1,5 @@
 properties([
-    pipelineTriggers([ 
+    pipelineTriggers([
         [
             $class: 'GenericTrigger',
             token: 'MY_GEN_TOKEN',
