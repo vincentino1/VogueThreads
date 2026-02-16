@@ -85,7 +85,7 @@ pipeline {
                         writeFile file: '.npmrc', text: """
 registry=${NPM_REGISTRY_URL}
 always-auth=${NPM_ALWAYS_AUTH}
-${NPM_REGISTRY_URL}:_auth=\${NEXUS_NPM_TOKEN}
+${NPM_REGISTRY_URL}:_auth=${NEXUS_NPM_TOKEN}
 email=jenkins@example.com
 """
                         sh 'npm ci'
