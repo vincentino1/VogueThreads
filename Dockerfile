@@ -1,5 +1,5 @@
 # Private Nexus Docker registry
-ARG DOCKER_PRIVATE_REPO=16-52-79-103.sslip.io/myapp-docker-group
+ARG DOCKER_PRIVATE_REPO=3-98-125-121.sslip.io/myapp-docker-group
 
 # Stage 1 - Build the Angular app
 # Use Node 20 Alpine image from private Nexus Docker group registry
