@@ -34,7 +34,7 @@ pipeline {
         // Nexus npm registry configuration
         NPM_REGISTRY_URL = 'https://3-98-125-121.sslip.io/repository/myapp-npm-group/' 
         NPM_ALWAYS_AUTH  = 'true'
-        NPM_TOKEN = credentials('nexus-npm-token')  // store token in Jenkins credentials
+    
 
         // Docker credentials ID (must be Username/Password type in Jenkins)
         DOCKER_CREDENTIALS_ID = 'docker-registry-creds'
