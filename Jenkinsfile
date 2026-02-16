@@ -17,12 +17,7 @@ properties([
 
 pipeline {
     // Use Docker-in-Docker agent with Docker socket mounted
-    agent {
-        docker {
-            image 'docker:stable-dind'
-            args '-v /var/run/docker.sock:/var/run/docker.sock --privileged'
-        }
-    }
+    agent any
 
     tools {
         nodejs 'node20'
