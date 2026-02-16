@@ -24,7 +24,7 @@ pipeline {
     }
 
     environment {
-        GIT_CREDENTIALS       = 'Git_Credential'
+        GIT_CREDENTIALS       = 'github-creds'
 
         // Nexus Docker Registry ENV
         DOCKER_REPO           = 'myapp-docker-hosted'
@@ -82,7 +82,7 @@ pipeline {
 registry=${NPM_REGISTRY_URL}
 always-auth=${NPM_ALWAYS_AUTH}
 ${NPM_REGISTRY_URL}:_auth=\${NEXUS_NPM_TOKEN}
-always-auth=${NPM_ALWAYS_AUTH}
+email=jenkins@example.com
 """
                         sh 'npm ci'
                         sh 'npm whoami'  // Verify auth
