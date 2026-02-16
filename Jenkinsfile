@@ -81,7 +81,7 @@ pipeline {
                     withCredentials([
                         string(credentialsId: 'NEXUS_NPM_TOKEN', variable: 'NPM_TOKEN')
                     ]) {
-                        writeFile file: '.npmrc', 
+                        writeFile file: '.npmrc',   
                                   text: """
 registry=https://${REGISTRY_HOSTNAME}/repository/myapp-npm-group/
 always-auth=true
