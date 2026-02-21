@@ -35,7 +35,7 @@ pipeline {
 
         // NEXUS_URL is set as Jenkins environment variable
 
-        CHROME_BIN = '/usr/bin/chromium-browser'
+        CHROME_BIN = '/snap/bin/chromium'
 
     }
 
