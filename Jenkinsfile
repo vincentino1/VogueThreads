@@ -25,7 +25,8 @@ pipeline {
     environment {
         // Git
         GIT_CREDENTIALS = 'github-creds'
-        GIT_BRANCH_URL = 'https://github.com/vincentino1/frontend.git'
+        GIT_BRANCH_URL = 'https://github.com/vincentino1/frontend.git' 
+        
 
         // Nexus Docker Registry
         DOCKER_REPO_PUSH           = 'myapp-docker-hosted'
