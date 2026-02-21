@@ -56,7 +56,9 @@ module.exports = function (config) {
           '--disable-dev-shm-usage',
           '--disable-software-rasterizer',
           '--remote-debugging-port=9222',
+
         ],
+        executablePath: process.env.CHROME_BIN,
       },
     },
 
