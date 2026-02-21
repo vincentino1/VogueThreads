@@ -35,6 +35,9 @@ pipeline {
 
         // NEXUS_URL is set as Jenkins environment variables
 
+        // Set CHROME_BIN for Jenkins and make sure to install chromium via snap; sudo snap install chromium
+        CHROME_BIN = '/snap/bin/chromium'
+
     }
 
     stages {
