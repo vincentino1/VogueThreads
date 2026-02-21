@@ -9,6 +9,7 @@ properties([
                 [key: 'repo_name', value: '$.repository.name']
             ],
             regexpFilterText: '$repo_name:$ref',
+            // Only trigger on main branch
             regexpFilterExpression: '^.+:refs/heads/main$'
         ]
     ])
@@ -22,18 +23,30 @@ pipeline {
     }
 
     environment {
+        // Git
         GIT_CREDENTIALS = 'github-creds'
         GIT_BRANCH_URL  = 'https://github.com/vincentino1/frontend.git'
 
+        // Nexus Docker Registry
         DOCKER_REPO_PUSH      = 'myapp-docker-hosted'
         DOCKER_REPO_PULL      = 'myapp-docker-group'
         DOCKER_CREDENTIALS_ID = 'docker-registry-creds'
+
+        // NEXUS_URL is set as Jenkins environment variable
     }
 
     stages {
 
+        stage('Webhook Debug') {
+            steps {
+                echo "Branch: ${env.ref}"
+                echo "Repo: ${env.repo_name}"
+            }
+        }
+
         stage('Clean Workspace') {
             steps {
+                echo "Cleaning workspace..."
                 cleanWs()
             }
         }
@@ -42,7 +55,7 @@ pipeline {
             steps {
                 script {
                     if (!env.ref) {
-                        error "Webhook did not provide 'ref'."
+                        error "Webhook did not provide 'ref'. Cannot determine branch."
                     }
 
                     env.branchName = env.ref.replace('refs/heads/', '')
@@ -50,9 +63,9 @@ pipeline {
                 }
 
                 git(
-                    branch: env.branchName,
-                    credentialsId: env.GIT_CREDENTIALS,
-                    url: env.GIT_BRANCH_URL
+                    branch: "${env.branchName}",
+                    credentialsId: "${env.GIT_CREDENTIALS}",
+                    url: "${env.GIT_BRANCH_URL}"
                 )
             }
         }
@@ -61,7 +74,8 @@ pipeline {
             steps {
                 dir('angular-app') {
                     withNPM(npmrcConfig: 'my-custom-npmrc') {
-                        sh 'npm ci'
+                        echo "Performing npm build..."
+                        sh 'npm install'
                         sh 'npm whoami'
                     }
                 }
@@ -75,21 +89,13 @@ pipeline {
             }
         }
 
-        // stage('Unit Tests') { 
-            // steps { 
-                // dir('angular-app') {
-                    // sh 'npm run test:ci' 
-                    // } 
-            // }
+        // stage('Unit Tests') {
+        //     steps {
+        //         dir('angular-app') {
+        //             sh 'npm run test:ci'
+        //         }
+        //     }
         // }
-    
-        stage('Build Angular App') {
-            steps {
-                dir('angular-app') {
-                    sh 'npm run build'
-                }
-            }
-        }
 
         stage('NPM Publish') {
             when {
@@ -104,7 +110,7 @@ pipeline {
                             echo "Package is private — skipping npm publish."
                         } else {
                             withNPM(npmrcConfig: 'my-custom-npmrc') {
-                                sh 'npm publish --registry https://repo.vinny-dev.com/repository/myapp-npm-hosted/'
+                                sh 'npm publish'
                             }
                         }
                     }
@@ -116,13 +122,13 @@ pipeline {
             steps {
                 dir('angular-app') {
                     script {
-                        def pkg = readJSON file: 'package.json'
-                        def appName = pkg.name
+                        def pkg        = readJSON file: 'package.json'
+                        def appName    = pkg.name
                         def appVersion = pkg.version
 
                         env.IMAGE_NAME = "${env.NEXUS_URL}/${env.DOCKER_REPO_PUSH}/${appName}:v${appVersion}-${env.BUILD_NUMBER}"
 
-                        docker.withRegistry("https://${env.NEXUS_URL}", env.DOCKER_CREDENTIALS_ID) {
+                        docker.withRegistry('https://${env.NEXUS_URL}', '${env.DOCKER_CREDENTIALS_ID}') {
                             docker.build(
                                 env.IMAGE_NAME,
                                 "--build-arg DOCKER_PRIVATE_REPO=${env.NEXUS_URL}/${env.DOCKER_REPO_PULL} ."
@@ -135,18 +141,18 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Docker Image to Nexus') {
             when {
                 expression { env.branchName == 'main' }
             }
             steps {
                 script {
-                    docker.withRegistry("https://${env.NEXUS_URL}", env.DOCKER_CREDENTIALS_ID) {
+                    docker.withRegistry('https://${env.NEXUS_URL}', '${env.DOCKER_CREDENTIALS_ID}') {
                         docker.image(env.IMAGE_NAME).push()
                         docker.image(env.IMAGE_NAME).push('latest')
                     }
 
-                    echo "Pushed image: ${env.IMAGE_NAME}"
+                    echo "Pushed Docker image: ${env.IMAGE_NAME}"
                 }
             }
         }
@@ -156,10 +162,7 @@ pipeline {
         always {
             script {
                 if (env.IMAGE_NAME) {
-                    sh """
-                        docker image inspect ${env.IMAGE_NAME} > /dev/null 2>&1 && \
-                        docker rmi ${env.IMAGE_NAME} || true
-                    """
+                    sh "docker rmi ${env.IMAGE_NAME} || true"
                 }
             }
         }
@@ -169,7 +172,7 @@ pipeline {
         }
 
         failure {
-            echo 'Pipeline failed.'
+            echo 'The pipeline encountered an error and did not complete successfully.'
         }
     }
 }
