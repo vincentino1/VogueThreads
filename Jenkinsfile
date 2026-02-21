@@ -97,33 +97,34 @@ pipeline {
         //     }
         // }
 
-        stage('Build Angular App') {
-            steps {
-                dir('angular-app') {
-                    sh 'npm run build'
-                }
-            }
-        }
-
         stage('NPM Publish') {
-            when {
-                expression { env.branchName == 'main' }
-            }
-            steps {
-                dir('angular-app') {
+    when {
+        expression { 
+            env.branchName == 'main'
+        }
+    }
+    steps {
+        dir('angular-app') {
+            script {
+                def pkg = readJSON file: 'package.json'
+                if (pkg.private) {
+                    echo "Package is private — skipping npm publish."
+                } else {
                     withNPM(npmrcConfig: 'my-custom-npmrc') {
                         sh 'npm publish --registry https://repo.vinny-dev.com/repository/myapp-npm-hosted/'
                     }
                 }
             }
-            post {
-                always {
-                    dir('angular-app') {
-                        sh 'rm -f .npmrc'
-                    }
-                }
+        }
+    }
+    post {
+        always {
+            dir('angular-app') {
+                sh 'rm -f .npmrc'
             }
         }
+    }
+}
 
         stage('Build Docker Image') {
             steps {
