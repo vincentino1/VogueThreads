@@ -77,7 +77,7 @@ pipeline {
 
                     withNPM(npmrcConfig:'my-custom-npmrc') {
                         echo "Performing npm build..."
-                        sh 'npm install'
+                        sh 'npm install --verbose'
                         sh 'npm whoami'
                     }
                 }
