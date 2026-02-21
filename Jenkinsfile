@@ -5,7 +5,7 @@ properties([
             token: 'MY_GEN_TOKEN', 
             printContributedVariables: true,  
             genericVariables: [ 
-                [key: 'ref', value: '$.ref'],
+                [key: 'ref', value: '$.ref'], 
                 [key: 'repo_name', value: '$.repository.name']
             ],
             regexpFilterText: '$repo_name:$ref',
